@@ -193,7 +193,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: mailcow/dovecot:1.126
+      image: dovecot-gpgit:1.126
       depends_on:
         - mysql-mailcow
       dns:
