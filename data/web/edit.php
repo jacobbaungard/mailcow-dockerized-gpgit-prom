@@ -53,7 +53,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
                 <?php if (getenv('SKIP_SOGO') != "y") { ?>
                 <hr>
                 <div class="checkbox">
-                  <label><input type="checkbox" value="1" name="sogo_visible" <?php if (isset($result['sogo_visible_int']) && $result['sogo_visible_int']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['sogo_visible'];?></label>
+                  <label><input type="checkbox" value="1" name="sogo_visible" <?php if (isset($result['sogo_visible']) && $result['sogo_visible']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['sogo_visible'];?></label>
                 </div>
                 <p class="help-block"><?=$lang['edit']['sogo_visible_info'];?></p>
                 <?php } ?>
@@ -76,7 +76,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active" <?php if (isset($result['active_int']) && $result['active_int']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
+                <label><input type="checkbox" value="1" name="active" <?php if (isset($result['active']) && $result['active']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
                 </div>
               </div>
             </div>
@@ -101,7 +101,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
       ?>
       <h4><?=$lang['edit']['domain_admin'];?></h4>
       <br>
-      <form class="form-horizontal" data-id="editdomainadmin" role="form" method="post">
+      <form class="form-horizontal" data-id="editdomainadmin" role="form" method="post" autocomplete="off">
         <input type="hidden" value="0" name="active">
         <div class="form-group">
           <label class="control-label col-sm-2" for="username_new"><?=$lang['edit']['username'];?></label>
@@ -131,19 +131,19 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <div class="form-group">
           <label class="control-label col-sm-2" for="password"><?=$lang['edit']['password'];?> (<a href="#" class="generate_password"><?=$lang['edit']['generate'];?></a>)</label>
           <div class="col-sm-10">
-          <input type="password" data-pwgen-field="true" data-hibp="true" class="form-control" name="password" placeholder="">
+          <input type="password" data-pwgen-field="true" data-hibp="true" class="form-control" name="password" placeholder="" autocomplete="new-password">
           </div>
         </div>
         <div class="form-group">
           <label class="control-label col-sm-2" for="password2"><?=$lang['edit']['password_repeat'];?></label>
           <div class="col-sm-10">
-          <input type="password" data-pwgen-field="true" class="form-control" name="password2">
+          <input type="password" data-pwgen-field="true" class="form-control" name="password2" autocomplete="new-password">
           </div>
         </div>
         <div class="form-group">
           <div class="col-sm-offset-2 col-sm-10">
             <div class="checkbox">
-            <label><input type="checkbox" value="1" name="active" <?php if (isset($result['active_int']) && $result['active_int']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
+            <label><input type="checkbox" value="1" name="active" <?php if (isset($result['active']) && $result['active']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
             </div>
           </div>
         </div>
@@ -199,7 +199,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
       ?>
       <h4><?=$lang['edit']['domain_admin'];?></h4>
       <br>
-      <form class="form-horizontal" data-id="editadmin" role="form" method="post">
+      <form class="form-horizontal" data-id="editadmin" role="form" method="post" autocomplete="off">
         <input type="hidden" value="0" name="active">
         <div class="form-group">
           <label class="control-label col-sm-2" for="username_new"><?=$lang['edit']['username'];?></label>
@@ -210,19 +210,19 @@ if (isset($_SESSION['mailcow_cc_role'])) {
         <div class="form-group">
           <label class="control-label col-sm-2" for="password"><?=$lang['edit']['password'];?> (<a href="#" class="generate_password"><?=$lang['edit']['generate'];?></a>)</label>
           <div class="col-sm-10">
-          <input type="password" data-pwgen-field="true" data-hibp="true" class="form-control" name="password" placeholder="">
+          <input type="password" data-pwgen-field="true" data-hibp="true" class="form-control" name="password" placeholder="" autocomplete="new-password">
           </div>
         </div>
         <div class="form-group">
           <label class="control-label col-sm-2" for="password2"><?=$lang['edit']['password_repeat'];?></label>
           <div class="col-sm-10">
-          <input type="password" data-pwgen-field="true" class="form-control" name="password2">
+          <input type="password" data-pwgen-field="true" class="form-control" name="password2" autocomplete="new-password">
           </div>
         </div>
         <div class="form-group">
           <div class="col-sm-offset-2 col-sm-10">
             <div class="checkbox">
-            <label><input type="checkbox" value="1" name="active" <?php if (isset($result['active_int']) && $result['active_int']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
+            <label><input type="checkbox" value="1" name="active" <?php if (isset($result['active']) && $result['active']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
             </div>
           </div>
         </div>
@@ -263,7 +263,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <input type="hidden" value="0" name="gal">
             <input type="hidden" value="0" name="relay_all_recipients">
             <input type="hidden" value="0" name="relay_unknown_only">
-            <div class="form-group">
+            <div class="form-group" data-acl="<?=$_SESSION['acl']['domain_desc'];?>">
               <label class="control-label col-sm-2" for="description"><?=$lang['edit']['description'];?></label>
               <div class="col-sm-10">
                 <input type="text" class="form-control" name="description" value="<?=htmlspecialchars($result['description']);?>">
@@ -321,11 +321,11 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               <label class="control-label col-sm-2"><?=$lang['edit']['backup_mx_options'];?></label>
               <div class="col-sm-10">
                 <div class="checkbox">
-                  <label><input type="checkbox" value="1" name="backupmx" <?=(isset($result['backupmx_int']) && $result['backupmx_int']=="1") ? "checked" : null;?>> <?=$lang['edit']['relay_domain'];?></label>
+                  <label><input type="checkbox" value="1" name="backupmx" <?=(isset($result['backupmx']) && $result['backupmx']=="1") ? "checked" : null;?>> <?=$lang['edit']['relay_domain'];?></label>
                   <br>
-                  <label><input type="checkbox" value="1" name="relay_all_recipients" <?=(isset($result['relay_all_recipients_int']) && $result['relay_all_recipients_int']=="1") ? "checked" : null;?>> <?=$lang['edit']['relay_all'];?></label>
+                  <label><input type="checkbox" value="1" name="relay_all_recipients" <?=(isset($result['relay_all_recipients']) && $result['relay_all_recipients']=="1") ? "checked" : null;?>> <?=$lang['edit']['relay_all'];?></label>
                   <p><?=$lang['edit']['relay_all_info'];?></p>
-                  <label><input type="checkbox" value="1" name="relay_unknown_only" <?=(isset($result['relay_unknown_only_int']) && $result['relay_unknown_only_int']=="1") ? "checked" : null;?>> <?=$lang['edit']['relay_unknown_only'];?></label>
+                  <label><input type="checkbox" value="1" name="relay_unknown_only" <?=(isset($result['relay_unknown_only']) && $result['relay_unknown_only']=="1") ? "checked" : null;?>> <?=$lang['edit']['relay_unknown_only'];?></label>
                   <br>
                   <p><?=$lang['edit']['relay_transport_info'];?></p>
                   <hr style="margin:25px 0px 0px 0px">
@@ -338,7 +338,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
-                  <label><input type="checkbox" value="1" name="gal" <?=(isset($result['gal_int']) && $result['gal_int']=="1") ? "checked" : null;?>> <?=$lang['edit']['gal'];?></label>
+                  <label><input type="checkbox" value="1" name="gal" <?=(isset($result['gal']) && $result['gal']=="1") ? "checked" : null;?>> <?=$lang['edit']['gal'];?></label>
                   <small class="help-block"><?=$lang['edit']['gal_info'];?></small>
                 </div>
               </div>
@@ -346,7 +346,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
-                  <label><input type="checkbox" value="1" name="active" <?=(isset($result['active_int']) && $result['active_int']=="1") ? "checked" : null;?> <?=($_SESSION['mailcow_cc_role'] == "admin") ? null : "disabled";?>> <?=$lang['edit']['active'];?></label>
+                  <label><input type="checkbox" value="1" name="active" <?=(isset($result['active']) && $result['active']=="1") ? "checked" : null;?> <?=($_SESSION['mailcow_cc_role'] == "admin") ? null : "disabled";?>> <?=$lang['edit']['active'];?></label>
                 </div>
               </div>
             </div>
@@ -517,7 +517,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
-                  <label><input type="checkbox" value="1" name="active" <?=(isset($result['active_int']) && $result['active_int']=="1") ?  "checked" : null ?>> <?=$lang['edit']['active'];?></label>
+                  <label><input type="checkbox" value="1" name="active" <?=(isset($result['active']) && $result['active']=="1") ?  "checked" : null ?>> <?=$lang['edit']['active'];?></label>
                 </div>
               </div>
             </div>
@@ -572,6 +572,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
       $rl = ratelimit('get', 'mailbox', $mailbox);
       $pushover_data = pushover('get', $mailbox);
       $quarantine_notification = mailbox('get', 'quarantine_notification', $mailbox);
+      $get_tls_policy = mailbox('get', 'tls_policy', $mailbox);
       if (!empty($result)) {
         ?>
         <h4><?=$lang['edit']['mailbox'];?></h4>
@@ -579,6 +580,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
           <input type="hidden" value="default" name="sender_acl">
           <input type="hidden" value="0" name="force_pw_update">
           <input type="hidden" value="0" name="sogo_access">
+          <input type="hidden" value="0" name="protocol_access">
           <div class="form-group">
             <label class="control-label col-sm-2" for="name"><?=$lang['edit']['full_name'];?></label>
             <div class="col-sm-10">
@@ -691,15 +693,34 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             </div>
           </div>
           <div class="form-group">
+            <label class="control-label col-sm-2" for="sender_acl"><?=$lang['user']['tls_policy'];?></label>
+            <div class="col-sm-10">
+              <div class="btn-group" data-acl="<?=$_SESSION['acl']['tls_policy'];?>">
+                <button type="button" class="btn btn-sm btn-default <?=($get_tls_policy['tls_enforce_in'] == "1") ? "active" : null;?>"
+                  data-action="edit_selected"
+                  data-item="<?= htmlentities($mailbox); ?>"
+                  data-id="tls_policy"
+                  data-api-url='edit/tls_policy'
+                  data-api-attr='{"tls_enforce_in":<?=($get_tls_policy['tls_enforce_in'] == "1") ? "0" : "1";?>}'><?=$lang['user']['tls_enforce_in'];?></button>
+                <button type="button" class="btn btn-sm btn-default <?=($get_tls_policy['tls_enforce_out'] == "1") ? "active" : null;?>"
+                  data-action="edit_selected"
+                  data-item="<?= htmlentities($mailbox); ?>"
+                  data-id="tls_policy"
+                  data-api-url='edit/tls_policy'
+                  data-api-attr='{"tls_enforce_out":<?=($get_tls_policy['tls_enforce_out'] == "1") ? "0" : "1";?>}'><?=$lang['user']['tls_enforce_out'];?></button>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
             <label class="control-label col-sm-2" for="password"><?=$lang['edit']['password'];?> (<a href="#" class="generate_password"><?=$lang['edit']['generate'];?></a>)</label>
             <div class="col-sm-10">
-            <input type="password" data-pwgen-field="true" data-hibp="true" class="form-control" name="password" placeholder="<?=$lang['edit']['unchanged_if_empty'];?>">
+            <input type="password" data-pwgen-field="true" data-hibp="true" class="form-control" name="password" placeholder="<?=$lang['edit']['unchanged_if_empty'];?>" autocomplete="new-password">
             </div>
           </div>
           <div class="form-group">
             <label class="control-label col-sm-2" for="password2"><?=$lang['edit']['password_repeat'];?></label>
             <div class="col-sm-10">
-            <input type="password" data-pwgen-field="true" class="form-control" name="password2">
+            <input type="password" data-pwgen-field="true" class="form-control" name="password2" autocomplete="new-password">
             </div>
           </div>
           <div data-acl="<?=$_SESSION['acl']['extend_sender_acl'];?>" class="form-group">
@@ -710,11 +731,29 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             </div>
           </div>
           <div class="form-group">
+            <label class="control-label col-sm-2" for="protocol_access"><?=$lang['edit']['allowed_protocols'];?></label>
+            <div class="col-sm-10">
+            <select data-acl="<?=$_SESSION['acl']['protocol_access'];?>" name="protocol_access" multiple class="form-control">
+              <option value="imap" <?=($result['attributes']['imap_access']=="1") ? 'selected' : null;?>>IMAP</option>
+              <option value="pop3" <?=($result['attributes']['pop3_access']=="1") ? 'selected' : null;?>>POP3</option>
+              <option value="smtp" <?=($result['attributes']['smtp_access']=="1") ? 'selected' : null;?>>SMTP</option>
+            </select>
+            </div>
+          </div>
+          <div hidden data-acl="<?=$_SESSION['acl']['smtp_ip_access'];?>" class="form-group">
+            <label class="control-label col-sm-2" for="allow_from_smtp"><?=$lang['edit']['allow_from_smtp'];?></label>
+            <div class="col-sm-10">
+            <input type="text" class="form-control" name="allow_from_smtp" value="<?=empty($allow_from_smtp) ? '' : $allow_from_smtp; ?>" placeholder="1.1.1.1, 10.2.0.0/24, ...">
+            <small class="help-block"><?=$lang['edit']['allow_from_smtp_info'];?></small>
+            </div>
+          </div>
+          <hr>
+          <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
             <select name="active" class="form-control">
-              <option value="1" <?=($result['active_int']=="1") ? 'selected' : null;?>><?=$lang['edit']['active'];?></option>
-              <option value="2" <?=($result['active_int']=="2") ? 'selected' : null;?>><?=$lang['edit']['disable_login'];?></option>
-              <option value="0" <?=($result['active_int']=="0") ? 'selected' : null;?>><?=$lang['edit']['inactive'];?></option>
+              <option value="1" <?=($result['active']=="1") ? 'selected' : null;?>><?=$lang['edit']['active'];?></option>
+              <option value="2" <?=($result['active']=="2") ? 'selected' : null;?>><?=$lang['edit']['disable_login'];?></option>
+              <option value="0" <?=($result['active']=="0") ? 'selected' : null;?>><?=$lang['edit']['inactive'];?></option>
             </select>
             </div>
           </div>
@@ -902,7 +941,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active" <?=($result['active_int']=="1") ? "checked" : null;?>> <?=$lang['edit']['active'];?></label>
+                <label><input type="checkbox" value="1" name="active" <?=($result['active']=="1") ? "checked" : null;?>> <?=$lang['edit']['active'];?></label>
                 </div>
               </div>
             </div>
@@ -955,7 +994,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active" <?=($result['active_int']=="1") ? "checked" : null;?>> <?=$lang['edit']['active'];?></label>
+                <label><input type="checkbox" value="1" name="active" <?=($result['active']=="1") ? "checked" : null;?>> <?=$lang['edit']['active'];?></label>
                 </div>
               </div>
             </div>
@@ -1015,7 +1054,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active" <?=($result['active_int']=="1") ? "checked" : null;?>> <?=$lang['edit']['active'];?></label>
+                <label><input type="checkbox" value="1" name="active" <?=($result['active']=="1") ? "checked" : null;?>> <?=$lang['edit']['active'];?></label>
                 </div>
               </div>
             </div>
@@ -1061,7 +1100,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active" <?php if (isset($result['active_int']) && $result['active_int']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
+                <label><input type="checkbox" value="1" name="active" <?php if (isset($result['active']) && $result['active']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
                 </div>
               </div>
             </div>
@@ -1110,7 +1149,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active" <?php if (isset($result['active_int']) && $result['active_int']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
+                <label><input type="checkbox" value="1" name="active" <?php if (isset($result['active']) && $result['active']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
                 </div>
               </div>
             </div>
@@ -1171,7 +1210,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active" <?php if (isset($result['active_int']) && $result['active_int']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
+                <label><input type="checkbox" value="1" name="active" <?php if (isset($result['active']) && $result['active']=="1") { echo "checked"; }; ?>> <?=$lang['edit']['active'];?></label>
                 </div>
               </div>
             </div>
@@ -1234,17 +1273,17 @@ if (isset($_SESSION['mailcow_cc_role'])) {
               <label class="control-label col-sm-2" for="enc1"><?=$lang['edit']['encryption'];?></label>
               <div class="col-sm-10">
                 <select id="enc1" name="enc1">
-                  <option <?=($result['enc1'] == "TLS") ? "selected" : null;?>>TLS</option>
-                  <option <?=($result['enc1'] == "SSL") ? "selected" : null;?>>SSL</option>
-                  <option <?=($result['enc1'] == "PLAIN") ? "selected" : null;?>>PLAIN</option>
+                  <option value="SSL" <?=($result['enc1'] == "SSL") ? "selected" : null;?>>SSL</option>
+                  <option value="TLS" <?=($result['enc1'] == "TLS") ? "selected" : null;?>>STARTTLS</option>
+                  <option value="PLAIN" <?=($result['enc1'] == "PLAIN") ? "selected" : null;?>>PLAIN</option>
                 </select>
               </div>
             </div>
             <div class="form-group">
               <label class="control-label col-sm-2" for="mins_interval"><?=$lang['edit']['mins_interval'];?></label>
               <div class="col-sm-10">
-                <input type="number" class="form-control" name="mins_interval" min="1" max="3600" value="<?=htmlspecialchars($result['mins_interval'], ENT_QUOTES, 'UTF-8');?>" required>
-                <small class="help-block">1-3600</small>
+                <input type="number" class="form-control" name="mins_interval" min="1" max="43800" value="<?=htmlspecialchars($result['mins_interval'], ENT_QUOTES, 'UTF-8');?>" required>
+                <small class="help-block">1-43800</small>
               </div>
             </div>
             <div class="form-group">
@@ -1339,7 +1378,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active" <?=($result['active_int']=="1") ? "checked" : "";?>> <?=$lang['edit']['active'];?></label>
+                <label><input type="checkbox" value="1" name="active" <?=($result['active']=="1") ? "checked" : "";?>> <?=$lang['edit']['active'];?></label>
                 </div>
               </div>
             </div>
@@ -1390,7 +1429,7 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active" <?=($result['active_int']=="1") ? "checked" : "";?>> <?=$lang['edit']['active'];?></label>
+                <label><input type="checkbox" value="1" name="active" <?=($result['active']=="1") ? "checked" : "";?>> <?=$lang['edit']['active'];?></label>
                 </div>
               </div>
             </div>
@@ -1426,19 +1465,19 @@ if (isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <label class="control-label col-sm-2" for="password"><?=$lang['edit']['password'];?> (<a href="#" class="generate_password"><?=$lang['edit']['generate'];?></a>)</label>
               <div class="col-sm-10">
-              <input type="password" data-pwgen-field="true" data-hibp="true" class="form-control" name="password" placeholder="">
+              <input type="password" data-pwgen-field="true" data-hibp="true" class="form-control" name="password" placeholder="" autocomplete="new-password">
               </div>
             </div>
             <div class="form-group">
               <label class="control-label col-sm-2" for="password2"><?=$lang['edit']['password_repeat'];?></label>
               <div class="col-sm-10">
-              <input type="password" data-pwgen-field="true" class="form-control" name="password2">
+              <input type="password" data-pwgen-field="true" class="form-control" name="password2" autocomplete="new-password">
               </div>
             </div>
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
                 <div class="checkbox">
-                <label><input type="checkbox" value="1" name="active" <?=($result['active_int']=="1") ? "checked" : "";?>> <?=$lang['edit']['active'];?></label>
+                <label><input type="checkbox" value="1" name="active" <?=($result['active']=="1") ? "checked" : "";?>> <?=$lang['edit']['active'];?></label>
                 </div>
               </div>
             </div>

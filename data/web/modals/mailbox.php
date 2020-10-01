@@ -13,7 +13,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
         <h3 class="modal-title"><?=$lang['mailbox']['add_mailbox'];?></h3>
       </div>
       <div class="modal-body">
-        <form class="form-horizontal" data-cached-form="true" data-id="add_mailbox" role="form">
+        <form class="form-horizontal" data-cached-form="true" data-id="add_mailbox" role="form" autocomplete="off">
           <div class="form-group">
             <label class="control-label col-sm-2" for="local_part"><?=$lang['add']['mailbox_username'];?></label>
             <div class="col-sm-10">
@@ -51,13 +51,13 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
           <div class="form-group">
             <label class="control-label col-sm-2" for="password"><?=$lang['add']['password'];?> (<a href="#" class="generate_password"><?=$lang['add']['generate'];?></a>)</label>
             <div class="col-sm-10">
-            <input type="password" data-pwgen-field="true" data-hibp="true" class="form-control" name="password" placeholder="" required>
+            <input type="password" data-pwgen-field="true" data-hibp="true" class="form-control" name="password" placeholder="" autocomplete="new-password" required>
             </div>
           </div>
           <div class="form-group">
             <label class="control-label col-sm-2" for="password2"><?=$lang['add']['password_repeat'];?></label>
             <div class="col-sm-10">
-            <input type="password" data-pwgen-field="true" class="form-control" name="password2" placeholder="" required>
+            <input type="password" data-pwgen-field="true" class="form-control" name="password2" placeholder="" autocomplete="new-password" required>
             </div>
           </div>
           <div class="form-group">
@@ -114,10 +114,10 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             <input type="number" class="form-control" name="mailboxes" value="10" required>
 						</div>
 					</div>
-                    <div class="form-group">
-                        <label class="control-label col-sm-2" for="defquota"><?=$lang['add']['mailbox_quota_def'];?></label>
-                        <div class="col-sm-10">
-                            <input type="number" class="form-control" name="defquota" value="3072" required>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="defquota"><?=$lang['add']['mailbox_quota_def'];?></label>
+            <div class="col-sm-10">
+              <input type="number" class="form-control" name="defquota" value="3072" required>
             </div>
           </div>
           <div class="form-group">
@@ -173,7 +173,7 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
                 <br>
                 <label><input type="checkbox" value="1" name="relay_all_recipients"> <?=$lang['add']['relay_all'];?></label>
                 <p><?=$lang['add']['relay_all_info'];?></p>
-                <label><input type="checkbox" value="1" name="relay_unknown_only" <?=(isset($result['relay_unknown_only_int']) && $result['relay_unknown_only_int']=="1") ? "checked" : null;?>> <?=$lang['add']['relay_unknown_only'];?></label>
+                <label><input type="checkbox" value="1" name="relay_unknown_only" <?=(isset($result['relay_unknown_only']) && $result['relay_unknown_only']=="1") ? "checked" : null;?>> <?=$lang['add']['relay_unknown_only'];?></label>
                 <br>
                 <p><?=$lang['add']['relay_transport_info'];?></p>
                 <hr style="margin:25px 0px 0px 0px">
@@ -448,17 +448,17 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             <label class="control-label col-sm-2" for="enc1"><?=$lang['add']['enc_method'];?></label>
             <div class="col-sm-10">
               <select name="enc1" title="<?=$lang['add']['select'];?>" required>
-                <option selected>TLS</option>
-                <option>SSL</option>
-                <option>PLAIN</option>
+                <option value="SSL" selected>SSL</option>
+                <option value="TLS">STARTTLS</option>
+                <option value="PLAIN">PLAIN</option>
               </select>
             </div>
           </div>
           <div class="form-group">
             <label class="control-label col-sm-2" for="mins_interval"><?=$lang['add']['mins_interval'];?></label>
             <div class="col-sm-10">
-              <input type="number" class="form-control" name="mins_interval" min="1" max="3600" value="20" required>
-              <small class="help-block">1-3600</small>
+              <input type="number" class="form-control" name="mins_interval" min="1" max="43800" value="20" required>
+              <small class="help-block">1-43800</small>
             </div>
           </div>
           <div class="form-group">
