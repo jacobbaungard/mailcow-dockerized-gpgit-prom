@@ -1,4 +1,4 @@
-FROM mailcow/dovecot:1.126
+FROM mailcow/dovecot:1.133
 LABEL maintainer "Jacob Baungard Hansen <jacob@baungard-hansen.me>"
 
 RUN apt-get update && apt-get install -y libmail-gnupg-perl git
