@@ -1073,7 +1073,6 @@ while true; do
   elif [[ ${com_pipe_answer} == "mysql_repl_checks" ]]; then
     log_msg "MySQL replication is not working properly"
     # Define $2 to override message text, else print service was restarted at ...
-<<<<<<< HEAD
     # Once mail per 10 minutes
     mail_error "${com_pipe_answer}" "Please check the SQL replication status" 600
   elif [[ ${com_pipe_answer} == "dovecot_repl_checks" ]]; then
