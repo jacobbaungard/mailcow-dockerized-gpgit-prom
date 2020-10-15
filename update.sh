@@ -124,6 +124,7 @@ while (($#)); do
       fi
       if [[ -z $(git log HEAD --pretty=format:"%H" | grep "${LATEST_REV}") ]]; then
         echo "Updated code is available."
+        git log --date=short --pretty=format:"%ad - %s" $(git rev-parse --short HEAD)..origin/master
         exit 0
       else
         echo "No updates available."
@@ -154,7 +155,7 @@ while (($#)); do
       NO_UPDATE_COMPOSE=y
     ;;
     --help|-h)
-    echo './update.sh [-c|--check, --ours, --gc, --skip-start, -h|--help]
+    echo './update.sh [-c|--check, --ours, --gc, --no-update-compose, --prefetch, --skip-start, -f|--force, -h|--help]
 
   -c|--check           -   Check for updates and exit (exit codes => 0: update available, 3: no updates)
   --ours               -   Use merge strategy option "ours" to solve conflicts in favor of non-mailcow code (local changes over remote changes), not recommended!
