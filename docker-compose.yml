@@ -443,7 +443,6 @@ services:
 
     watchdog-mailcow:
       image: jacobbaungard/mailcow-watchdog:1.91
-      image: mailcow/watchdog:1.91
       # Debug
       #command: /watchdog.sh
       dns:
