@@ -5,6 +5,7 @@ if (isset($_SESSION['mailcow_cc_role']) && $_SESSION['mailcow_cc_role'] == "admi
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/header.inc.php';
 $_SESSION['return_to'] = $_SERVER['REQUEST_URI'];
 $tfa_data = get_tfa();
+$fido2_data = fido2(array("action" => "get_friendly_names"));
 if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CACHE')) {
   $_SESSION['gal'] = json_decode($license_cache, true);
 }
@@ -12,9 +13,18 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
 <div class="container">
 
   <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#tab-access" aria-controls="tab-access" role="tab" data-toggle="tab"><?=$lang['admin']['access'];?></a></li>
-    <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['admin']['configuration'];?>
-      <span class="caret"></span></a>
+    <li class="dropdown active">
+      <a class="dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['admin']['access'];?><span class="caret"></span></a>
+      <ul class="dropdown-menu">
+        <li class="active" data-dont-remember="1" role="presentation"><a href="#tab-config-admins" aria-controls="tab-config-admins" role="tab" data-toggle="tab"><?=$lang['admin']['admins'];?></a></li>
+        <!-- <li role="presentation"><a href="#tab-config-ldap-admins" aria-controls="tab-config-ldap-admins" role="tab" data-toggle="tab"><?=$lang['admin']['admins_ldap'];?></a></li> -->
+        <li role="presentation"><a href="#tab-config-oauth2" aria-controls="tab-config-oauth2" role="tab" data-toggle="tab">OAuth2 Apps</a></li>
+        <li role="presentation"><a href="#tab-config-rspamd" aria-controls="tab-config-rspamd" role="tab" data-toggle="tab">Rspamd UI</a></li>
+      </ul>
+    </li>
+
+    <li class="dropdown">
+      <a class="dropdown-toggle" data-toggle="dropdown" href="#"><?=$lang['admin']['configuration'];?><span class="caret"></span></a>
       <ul class="dropdown-menu">
         <li role="presentation"><a href="#tab-config-dkim" aria-controls="tab-config-dkim" role="tab" data-toggle="tab"><?=$lang['admin']['dkim_keys'];?></a></li>
         <li role="presentation"><a href="#tab-config-fwdhosts" aria-controls="tab-config-fwdhosts" role="tab" data-toggle="tab"><?=$lang['admin']['forwarding_hosts'];?></a></li>
@@ -22,6 +32,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
         <li role="presentation"><a href="#tab-config-quarantine" aria-controls="tab-config-quarantine" role="tab" data-toggle="tab"><?=$lang['admin']['quarantine'];?></a></li>
         <li role="presentation"><a href="#tab-config-quota" aria-controls="tab-config-quota" role="tab" data-toggle="tab"><?=$lang['admin']['quota_notifications'];?></a></li>
         <li role="presentation"><a href="#tab-config-rsettings" aria-controls="tab-config-rsettings" role="tab" data-toggle="tab"><?=$lang['admin']['rspamd_settings_map'];?></a></li>
+        <li role="presentation"><a href="#tab-config-password-policy" aria-controls="tab-config-password-policy" role="tab" data-toggle="tab"><?=$lang['admin']['password_policy'];?></a></li>
         <li role="presentation"><a href="#tab-config-customize" aria-controls="tab-config-customize" role="tab" data-toggle="tab"><?=$lang['admin']['customize'];?></a></li>
       </ul>
     </li>
@@ -39,7 +50,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
   <div class="row">
   <div class="col-md-12">
   <div class="tab-content" style="padding-top:20px">
-  <div role="tabpanel" class="tab-pane active" id="tab-access">
+  <div role="tabpanel" class="tab-pane active" id="tab-config-admins">
     <div class="panel panel-danger">
       <div class="panel-heading"><?=$lang['admin']['admin_details'];?></div>
       <div class="panel-body">
@@ -61,34 +72,39 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             <a class="btn btn-sm btn-success" data-id="add_admin" data-toggle="modal" data-target="#addAdminModal" href="#"><span class="glyphicon glyphicon-plus"></span> <?=$lang['admin']['add_admin'];?></a>
           </div>
         </div>
+
+        <? // TFA ?>
         <legend style="margin-top:20px">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="margin-bottom: -5px;">
-          <path d="M17.81 4.47c-.08 0-.16-.02-.23-.06C15.66 3.42 14 3 12.01 3c-1.98 0-3.86.47-5.57 1.41-.24.13-.54.04-.68-.2-.13-.24-.04-.55.2-.68C7.82 2.52 9.86 2 12.01 2c2.13 0 3.99.47 6.03 1.52.25.13.34.43.21.67-.09.18-.26.28-.44.28zM3.5 9.72c-.1 0-.2-.03-.29-.09-.23-.16-.28-.47-.12-.7.99-1.4 2.25-2.5 3.75-3.27C9.98 4.04 14 4.03 17.15 5.65c1.5.77 2.76 1.86 3.75 3.25.16.22.11.54-.12.7-.23.16-.54.11-.7-.12-.9-1.26-2.04-2.25-3.39-2.94-2.87-1.47-6.54-1.47-9.4.01-1.36.7-2.5 1.7-3.4 2.96-.08.14-.23.21-.39.21zm6.25 12.07c-.13 0-.26-.05-.35-.15-.87-.87-1.34-1.43-2.01-2.64-.69-1.23-1.05-2.73-1.05-4.34 0-2.97 2.54-5.39 5.66-5.39s5.66 2.42 5.66 5.39c0 .28-.22.5-.5.5s-.5-.22-.5-.5c0-2.42-2.09-4.39-4.66-4.39-2.57 0-4.66 1.97-4.66 4.39 0 1.44.32 2.77.93 3.85.64 1.15 1.08 1.64 1.85 2.42.19.2.19.51 0 .71-.11.1-.24.15-.37.15zm7.17-1.85c-1.19 0-2.24-.3-3.1-.89-1.49-1.01-2.38-2.65-2.38-4.39 0-.28.22-.5.5-.5s.5.22.5.5c0 1.41.72 2.74 1.94 3.56.71.48 1.54.71 2.54.71.24 0 .64-.03 1.04-.1.27-.05.53.13.58.41.05.27-.13.53-.41.58-.57.11-1.07.12-1.21.12zM14.91 22c-.04 0-.09-.01-.13-.02-1.59-.44-2.63-1.03-3.72-2.1-1.4-1.39-2.17-3.24-2.17-5.22 0-1.62 1.38-2.94 3.08-2.94 1.7 0 3.08 1.32 3.08 2.94 0 1.07.93 1.94 2.08 1.94s2.08-.87 2.08-1.94c0-3.77-3.25-6.83-7.25-6.83-2.84 0-5.44 1.58-6.61 4.03-.39.81-.59 1.76-.59 2.8 0 .78.07 2.01.67 3.61.1.26-.03.55-.29.64-.26.1-.55-.04-.64-.29-.49-1.31-.73-2.61-.73-3.96 0-1.2.23-2.29.68-3.24 1.33-2.79 4.28-4.6 7.51-4.6 4.55 0 8.25 3.51 8.25 7.83 0 1.62-1.38 2.94-3.08 2.94s-3.08-1.32-3.08-2.94c0-1.07-.93-1.94-2.08-1.94s-2.08.87-2.08 1.94c0 1.71.66 3.31 1.87 4.51.95.94 1.86 1.46 3.27 1.85.27.07.42.35.35.61-.05.23-.26.38-.47.38z"/>
-        </svg> <?=$lang['tfa']['tfa'];?></legend>
+          <?=$lang['tfa']['tfa'];?>
+        </legend>
         <div class="row">
           <div class="col-sm-3 col-xs-5 text-right"><?=$lang['tfa']['tfa'];?>:</div>
           <div class="col-sm-9 col-xs-7">
             <p id="tfa_pretty"><?=$tfa_data['pretty'];?></p>
-              <div id="tfa_additional">
-                <?php if (!empty($tfa_data['additional'])):
-                foreach ($tfa_data['additional'] as $key_info): ?>
+              <div id="tfa_keys">
+                <?php
+                if (!empty($tfa_data['additional'])) {
+                  foreach ($tfa_data['additional'] as $key_info) {
+                ?>
                 <form style="display:inline;" method="post">
-                  <input type="hidden" name="unset_tfa_key" value="<?=$key_info['id'];?>" />
-                  <div style="padding:4px;margin:4px" class="label label-<?=($_SESSION['tfa_id'] == $key_info['id']) ? 'success' : 'default'; ?>">
+                  <input type="hidden" name="unset_tfa_key" value="<?=$key_info['id'];?>">
+                  <div style="padding:4px;margin:4px" class="label label-keys label-<?=($_SESSION['tfa_id'] == $key_info['id']) ? 'success' : 'default'; ?>">
                   <?=$key_info['key_id'];?>
-                  <a href="#" style="font-weight:bold;color:white" onClick="$(this).closest('form').submit()">[<?=strtolower($lang['admin']['remove']);?>]</a>
+                  <a href="#" style="font-weight:bold;color:white" onClick="$(this).closest('form').submit()">[<?=$lang['admin']['remove'];?>]</a>
                   </div>
                 </form>
-                <?php endforeach;
-                endif;?>
+                <?php
+                  }
+                }
+                ?>
               </div>
-              <br />
+              <br>
           </div>
         </div>
         <div class="row">
           <div class="col-sm-3 col-xs-5 text-right"><?=$lang['tfa']['set_tfa'];?>:</div>
           <div class="col-sm-9 col-xs-7">
-            <select data-width="fit" id="selectTFA" class="selectpicker" title="<?=$lang['tfa']['select'];?>">
+            <select data-style="btn btn-sm dropdown-toggle bs-placeholder btn-default" data-width="fit" id="selectTFA" class="selectpicker" title="<?=$lang['tfa']['select'];?>">
               <option value="yubi_otp"><?=$lang['tfa']['yubi_otp'];?></option>
               <option value="u2f"><?=$lang['tfa']['u2f'];?></option>
               <option value="totp"><?=$lang['tfa']['totp'];?></option>
@@ -97,10 +113,66 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
           </div>
         </div>
 
-        <legend style="cursor:pointer;" data-target="#license" class="arrow-toggle" unselectable="on" data-toggle="collapse">
-          <span style="font-size:12px" class="arrow rotate glyphicon glyphicon-menu-up"></span> <?=$lang['admin']['guid_and_license'];?>
+        <? // FIDO2 ?>
+        <legend style="margin-top:20px">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="margin-bottom: -5px;">
+          <path d="M17.81 4.47c-.08 0-.16-.02-.23-.06C15.66 3.42 14 3 12.01 3c-1.98 0-3.86.47-5.57 1.41-.24.13-.54.04-.68-.2-.13-.24-.04-.55.2-.68C7.82 2.52 9.86 2 12.01 2c2.13 0 3.99.47 6.03 1.52.25.13.34.43.21.67-.09.18-.26.28-.44.28zM3.5 9.72c-.1 0-.2-.03-.29-.09-.23-.16-.28-.47-.12-.7.99-1.4 2.25-2.5 3.75-3.27C9.98 4.04 14 4.03 17.15 5.65c1.5.77 2.76 1.86 3.75 3.25.16.22.11.54-.12.7-.23.16-.54.11-.7-.12-.9-1.26-2.04-2.25-3.39-2.94-2.87-1.47-6.54-1.47-9.4.01-1.36.7-2.5 1.7-3.4 2.96-.08.14-.23.21-.39.21zm6.25 12.07c-.13 0-.26-.05-.35-.15-.87-.87-1.34-1.43-2.01-2.64-.69-1.23-1.05-2.73-1.05-4.34 0-2.97 2.54-5.39 5.66-5.39s5.66 2.42 5.66 5.39c0 .28-.22.5-.5.5s-.5-.22-.5-.5c0-2.42-2.09-4.39-4.66-4.39-2.57 0-4.66 1.97-4.66 4.39 0 1.44.32 2.77.93 3.85.64 1.15 1.08 1.64 1.85 2.42.19.2.19.51 0 .71-.11.1-.24.15-.37.15zm7.17-1.85c-1.19 0-2.24-.3-3.1-.89-1.49-1.01-2.38-2.65-2.38-4.39 0-.28.22-.5.5-.5s.5.22.5.5c0 1.41.72 2.74 1.94 3.56.71.48 1.54.71 2.54.71.24 0 .64-.03 1.04-.1.27-.05.53.13.58.41.05.27-.13.53-.41.58-.57.11-1.07.12-1.21.12zM14.91 22c-.04 0-.09-.01-.13-.02-1.59-.44-2.63-1.03-3.72-2.1-1.4-1.39-2.17-3.24-2.17-5.22 0-1.62 1.38-2.94 3.08-2.94 1.7 0 3.08 1.32 3.08 2.94 0 1.07.93 1.94 2.08 1.94s2.08-.87 2.08-1.94c0-3.77-3.25-6.83-7.25-6.83-2.84 0-5.44 1.58-6.61 4.03-.39.81-.59 1.76-.59 2.8 0 .78.07 2.01.67 3.61.1.26-.03.55-.29.64-.26.1-.55-.04-.64-.29-.49-1.31-.73-2.61-.73-3.96 0-1.2.23-2.29.68-3.24 1.33-2.79 4.28-4.6 7.51-4.6 4.55 0 8.25 3.51 8.25 7.83 0 1.62-1.38 2.94-3.08 2.94s-3.08-1.32-3.08-2.94c0-1.07-.93-1.94-2.08-1.94s-2.08.87-2.08 1.94c0 1.71.66 3.31 1.87 4.51.95.94 1.86 1.46 3.27 1.85.27.07.42.35.35.61-.05.23-.26.38-.47.38z"/>
+        </svg>
+        <?=$lang['fido2']['fido2_auth'];?></legend>
+        <div class="row">
+          <div class="col-sm-3 col-xs-5 text-right"><?=$lang['fido2']['known_ids'];?>:</div>
+          <div class="col-sm-9 col-xs-7">
+              <div class="table-responsive">
+              <table class="table table-striped table-hover table-condensed" id="fido2_keys">
+                <tr>
+                  <th>ID</th>
+                  <th style="min-width:240px;text-align: right"><?=$lang['admin']['action'];?></th>
+                </tr>
+                <?php
+                if (!empty($fido2_data)) {
+                  foreach ($fido2_data as $key_info) {
+                ?>
+                <tr>
+                  <td>
+                    <?=($_SESSION['fido2_cid'] == $key_info['cid']) ? '→ ' : NULL; ?><?=(!empty($key_info['fn']))?$key_info['fn']:$key_info['subject'];?>
+                  </td>
+                  <td style="min-width:240px;text-align: right">
+                    <form style="display:inline;" method="post">
+                    <input type="hidden" name="unset_fido2_key" value="<?=$key_info['cid'];?>">
+                    <div class="btn-group">
+                    <a href="#" class="btn btn-xs btn-default" data-cid="<?=$key_info['cid'];?>" data-subject="<?=base64_encode($key_info['subject']);?>" data-toggle="modal" data-target="#fido2ChangeFn"><span class="glyphicon glyphicon-pencil"></span> <?=$lang['fido2']['rename'];?></a>
+                    <a href="#" onClick='return confirm("<?=$lang['admin']['ays'];?>")?$(this).closest("form").submit():"";' class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> <?=$lang['admin']['remove'];?></a>
+                    </form>
+                    </div>
+                  </td>
+                </tr>
+                <?php
+                  }
+                }
+                ?>
+              </table>
+              </div>
+              <br>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-offset-3 col-sm-9">
+            <button class="btn btn-sm btn-primary" id="register-fido2"><?=$lang['fido2']['set_fido2'];?></button>
+          </div>
+        </div>
+        <br>
+        <div class="row" id="status-fido2">
+          <div class="col-sm-3 col-xs-5 text-right"><?=$lang['fido2']['register_status'];?>:</div>
+          <div class="col-sm-9 col-xs-7">
+            <div id="fido2-alerts">-</div>
+          </div>
+          <br>
+        </div>
+
+        <legend style="cursor:pointer;margin-top:40px" data-target="#license" class="arrow-toggle" unselectable="on" data-toggle="collapse">
+          <span style="font-size:12px" class="arrow rotate glyphicon glyphicon-menu-down"></span> <?=$lang['admin']['guid_and_license'];?>
         </legend>
-        <div id="license" class="collapse in">
+        <div id="license" class="collapse">
         <form class="form-horizontal" autocapitalize="none" autocorrect="off" role="form" method="post">
           <div class="form-group">
             <label class="control-label col-sm-3" for="guid"><?=$lang['admin']['guid'];?>:</label>
@@ -259,7 +331,17 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
           </div>
         </div>
     </div>
+  </div>
 
+  <div role="tabpanel" class="tab-pane" id="tab-config-ldap-admins">
+    <div class="panel panel-default">
+    <div class="panel-heading"><?=$lang['admin']['admins_ldap'];?></div>
+        <div class="panel-body">
+        </div>
+    </div>
+  </div>
+
+  <div role="tabpanel" class="tab-pane" id="tab-config-oauth2">
     <div class="panel panel-default">
     <div class="panel-heading">OAuth2 Apps</div>
         <div class="panel-body">
@@ -283,7 +365,9 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
           </div>
         </div>
     </div>
+  </div>
 
+  <div role="tabpanel" class="tab-pane" id="tab-config-rspamd">
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Rspamd UI</h3>
@@ -319,7 +403,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
           </form>
           </div>
           <div class="col-sm-3">
-            <img class="img-responsive" src="/img/rspamd_logo.png" alt="Rspamd UI" />
+            <img class="img-responsive" src="/img/rspamd_logo.png" alt="Rspamd UI">
           </div>
         </div>
       </div>
@@ -445,7 +529,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
               ($GLOBALS['SHOW_DKIM_PRIV_KEYS'] === true) ?: $dkim['privkey'] = base64_encode('Please set $SHOW_DKIM_PRIV_KEYS to true to show DKIM private keys.');
           ?>
             <div class="row collapse in dkim_key_valid">
-              <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" /></div>
+              <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>"></div>
               <div class="col-md-3">
                 <p><?=$lang['admin']['domain'];?>: <strong><?=htmlspecialchars($domain);?></strong>
                   <p class="dkim-label"><span class="label label-success"><?=$lang['admin']['dkim_key_valid'];?></span></p>
@@ -464,9 +548,9 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
           else {
           ?>
           <div class="row collapse in dkim_key_missing">
-            <div class="col-md-1"><input class="dkim_missing" type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" disabled /></div>
+            <div class="col-md-1"><input class="dkim_missing" type="checkbox" data-id="dkim" name="multi_select" value="<?=$domain;?>" disabled></div>
             <div class="col-md-3">
-              <p><?=$lang['admin']['domain'];?>: <strong><?=htmlspecialchars($domain);?></strong><br /><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
+              <p><?=$lang['admin']['domain'];?>: <strong><?=htmlspecialchars($domain);?></strong><br><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
             </div>
             <div class="col-md-8"><pre>-</pre></div>
               <hr class="visible-xs visible-sm">
@@ -479,7 +563,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
               ($GLOBALS['SHOW_DKIM_PRIV_KEYS'] === true) ?: $dkim['privkey'] = base64_encode('Please set $SHOW_DKIM_PRIV_KEYS to true to show DKIM private keys.');
             ?>
               <div class="row collapse in dkim_key_valid">
-              <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$alias_domain;?>" /></div>
+              <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$alias_domain;?>"></div>
                 <div class="col-md-2 col-md-offset-1">
                   <p><small>↳ Alias-Domain: <strong><?=htmlspecialchars($alias_domain);?></strong></small>
                     <p class="dkim-label"><span class="label label-success"><?=$lang['admin']['dkim_key_valid'];?></span></p>
@@ -498,9 +582,9 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             else {
             ?>
             <div class="row collapse in dkim_key_missing">
-              <div class="col-md-1"><input class="dkim_missing" type="checkbox" data-id="dkim" name="multi_select" value="<?=$alias_domain;?>" disabled /></div>
+              <div class="col-md-1"><input class="dkim_missing" type="checkbox" data-id="dkim" name="multi_select" value="<?=$alias_domain;?>" disabled></div>
               <div class="col-md-2 col-md-offset-1">
-                <p><small>↳ Alias-Domain: <strong><?=htmlspecialchars($alias_domain);?></strong><br /></small><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
+                <p><small>↳ Alias-Domain: <strong><?=htmlspecialchars($alias_domain);?></strong><br></small><span class="label label-danger"><?=$lang['admin']['dkim_key_missing'];?></span></p>
               </div>
               <div class="col-md-8"><pre>-</pre></div>
               <hr class="visible-xs visible-sm">
@@ -515,7 +599,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             ($GLOBALS['SHOW_DKIM_PRIV_KEYS'] === true) ?: $dkim['privkey'] = base64_encode('Please set $SHOW_DKIM_PRIV_KEYS to true to show DKIM private keys.');
           ?>
             <div class="row collapse in dkim_key_unused">
-              <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$blind;?>" /></div>
+              <div class="col-md-1"><input type="checkbox" data-id="dkim" name="multi_select" value="<?=$blind;?>"></div>
               <div class="col-md-3">
                 <p><?=$lang['admin']['domain'];?>: <strong><?=htmlspecialchars($blind);?></strong>
                   <p class="dkim-label"><span class="label label-warning"><?=$lang['admin']['dkim_key_unused'];?></span></p>
@@ -819,6 +903,12 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             <label class="col-sm-4 control-label" for="max_size"><?=$lang['admin']['quarantine_max_size'];?></label>
             <div class="col-sm-8">
               <input type="number" class="form-control" name="max_size" value="<?=$q_data['max_size'];?>" placeholder="0" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-4 control-label" for="max_score"><?=$lang['admin']['quarantine_max_score'];?></label>
+            <div class="col-sm-8">
+              <input type="number" class="form-control" name="max_score" value="<?=$q_data['max_score'];?>" placeholder="9999.0">
             </div>
           </div>
           <div class="form-group">
@@ -1144,6 +1234,49 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
     </div>
   </div>
 
+  <div role="tabpanel" class="tab-pane" id="tab-config-password-policy">
+    <div class="panel panel-default">
+      <div class="panel-heading"><?=$lang['admin']['password_policy'];?></div>
+      <div class="panel-body">
+        <?php $password_complexity = password_complexity('get'); ?>
+        <form class="form-horizontal" data-id="passwordpolicy" role="form" method="post">
+          <?php
+          foreach ($password_complexity as $name => $value) {
+          if ($name == 'length') {
+          ?>
+          <div class="form-group">
+            <label class="control-label col-sm-3" for="<?=$name;?>"><?=$lang['admin']['password_length'];?>:</label>
+            <div class="col-sm-2">
+              <input type="number" class="form-control" min="3" max="64" name="<?=$name;?>" id="<?=$name;?>" value="<?=$value;?>" required>
+            </div>
+          </div>
+          <?php
+          } else {
+          ?>
+          <input type="hidden" name="<?=$name;?>" value="0">
+          <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+              <label>
+                <input type="checkbox" name="<?=$name;?>" id="<?=$name;?>" value="1" <?=($value == 1) ? 'checked' : null;?>> <?=$lang['admin']["password_policy_$name"];?>
+              </label>
+            </div>
+          </div>
+          <?php
+          }
+          }
+          ?>
+          <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+              <div class="btn-group">
+                <button class="btn btn-sm btn-success" data-item="passwordpolicy" data-action="edit_selected" data-id="passwordpolicy" data-api-url='edit/passwordpolicy' data-api-attr='{}' href="#"><span class="glyphicon glyphicon-check"></span> <?=$lang['admin']['save'];?></button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <div role="tabpanel" class="tab-pane" id="tab-sys-mails">
     <div class="panel panel-default">
       <div class="panel-heading"><?=$lang['admin']['sys_mails'];?></div>
@@ -1208,6 +1341,13 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
             <label class="control-label col-sm-2" for="mass_text"><?=$lang['admin']['text'];?>:</label>
             <div class="col-sm-10">
               <textarea class="form-control" rows="10" name="mass_text" id="mass_text" required></textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="mass_html"><?=$lang['admin']['html'];?> (<?=$lang['admin']['optional'];?>):</label>
+            <div class="col-sm-10">
+              <textarea class="form-control" rows="10" name="mass_html" id="mass_html"></textarea>
+              <p class="small">↪ <a target="_blank" href="https://templates.mailchimp.com/resources/html-to-text/"><?=$lang['admin']['convert_html_to_text'];?></a></p>
             </div>
           </div>
           <div class="form-group">
@@ -1306,7 +1446,7 @@ if (!isset($_SESSION['gal']) && $license_cache = $redis->Get('LICENSE_STATUS_CAC
         ?>
         <hr>
         <span class="anchor" id="<?=$rspamd_regex_map;?>"></span>
-        <form class="form-horizontal" data-id="<?=$rspamd_regex_map;?>" role="form" method="post">
+        <form class="form-horizontal" data-cached-form="false" data-id="<?=$rspamd_regex_map;?>" role="form" method="post">
           <div class="form-group">
             <label class="control-label col-sm-3" for="<?=$rspamd_regex_map;?>"><?=$rspamd_regex_desc;?><br><small><?=$rspamd_regex_map;?></small></label>
             <div class="col-sm-9">

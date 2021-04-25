@@ -44,8 +44,8 @@ get_ipv6(){
   local IPV6=
   local IPV6_SRCS=
   local TRY=
-  IPV6_SRCS[0]="ip6.korves.net"
-  IPV6_SRCS[1]="ip6.mailcow.email"
+  IPV6_SRCS[0]="ip6.mailcow.email"
+  IPV6_SRCS[1]="ip6.nevondo.com"
   until [[ ! -z ${IPV6} ]] || [[ ${TRY} -ge 10 ]]; do
     IPV6=$(curl --connect-timeout 3 -m 10 -L6s ${IPV6_SRCS[$RANDOM % ${#IPV6_SRCS[@]} ]} | grep "^\([0-9a-fA-F]\{0,4\}:\)\{1,7\}[0-9a-fA-F]\{0,4\}$")
     [[ ! -z ${TRY} ]] && sleep 1
@@ -108,7 +108,7 @@ function mail_error() {
     SUBJECT="${BODY}"
     BODY="Please see netfilter-mailcow for more details and triggered rules."
   else
-    SUBJECT="Watchdog ALERT: ${1}"
+    SUBJECT="${WATCHDOG_SUBJECT}: ${1}"
   fi
   if [[ ! -z ${WATCHDOG_NOTIFY_EMAIL} ]]; then
     WATCHDOG_NOTIFY_EMAIL=$(echo "${WATCHDOG_NOTIFY_EMAIL}" | sed 's/"//;s|"$||')
@@ -218,7 +218,7 @@ external_checks() {
       sleep 60
     else
       diff_c=0
-      sleep $(( ( RANDOM % 20 ) + 120 ))
+      sleep $(( ( RANDOM % 20 ) + 1800 ))
     fi
   done
   return 1
@@ -717,10 +717,10 @@ From: watchdog@localhost
 Empty
 ' | usr/bin/curl --max-time 10 -s --data-binary @- --unix-socket /var/lib/rspamd/rspamd.sock http://rspamd/scan | jq -rc .default.required_score)
     if [[ ${SCORE} != "9999" ]]; then
-      echo "Rspamd settings check failed" 2>> /tmp/rspamd-mailcow 1>&2
+      echo "Rspamd settings check failed, score returned: ${SCORE}" 2>> /tmp/rspamd-mailcow 1>&2
       err_count=$(( ${err_count} + 1))
     else
-      echo "Rspamd settings check succeeded" 2>> /tmp/rspamd-mailcow 1>&2
+      echo "Rspamd settings check succeeded, score returned: ${SCORE}" 2>> /tmp/rspamd-mailcow 1>&2
     fi
     # A dirty hack until a PING PONG event is implemented to worker proxy
     # We expect an empty response, not a timeout

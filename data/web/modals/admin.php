@@ -59,8 +59,8 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <label class="control-label col-sm-2" for="username"><?=$lang['admin']['username'];?>:</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" name="username" required>
-                &rdsh; <kbd>a-z A-Z - _ .</kbd>
+                <input type="text" class="form-control" name="username" onkeyup="this.value = this.value.toLowerCase();" required>
+                &rdsh; <kbd>a-z - _ .</kbd>
               </div>
             </div>
             <div class="form-group">
@@ -104,6 +104,34 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
     </div>
   </div>
 </div><!-- add domain admin modal -->
+<!-- change fido2 fn -->
+<div class="modal fade" id="fido2ChangeFn" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <h3 class="modal-title"><?=$lang['fido2']['set_fn'];?></h3>
+        <p class="help-block" style="word-break:break-all" id="fido2_subject_desc" data-fido2-subject=""></p>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal" data-cached-form="false" data-id="fido2ChangeFn" role="form" method="post" autocomplete="off">
+          <input type="hidden" class="form-control" name="fido2_cid" id="fido2_cid">
+          <div class="form-group">
+            <label class="control-label col-sm-4" for="fido2_fn"><?=$lang['fido2']['fn'];?>:</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" name="fido2_fn">
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-4 col-sm-8">
+              <button class="btn btn-default" data-action="edit_selected" data-id="fido2ChangeFn" data-item="null" data-api-url='edit/fido2-fn' data-api-attr='{}' href="#"><?=$lang['admin']['save'];?></button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div><!-- add domain admin modal -->
 <!-- add oauth2 client modal -->
 <div class="modal fade" id="addOAuth2ClientModal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog modal-lg">
@@ -143,8 +171,8 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
             <div class="form-group">
               <label class="control-label col-sm-2" for="username"><?=$lang['admin']['username'];?>:</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" name="username" required>
-                &rdsh; <kbd>a-z A-Z - _ .</kbd>
+                <input type="text" class="form-control" name="username" onkeyup="this.value = this.value.toLowerCase();" required>
+                &rdsh; <kbd>a-z - _ .</kbd>
               </div>
             </div>
             <div class="form-group">
@@ -192,6 +220,13 @@ if (!isset($_SESSION['mailcow_cc_role'])) {
               <label class="control-label col-sm-2" for="mail_from"><?=$lang['admin']['relay_from'];?></label>
               <div class="col-sm-10">
                 <input type="text" class="form-control" name="mail_from" placeholder="relay@example.org">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="mail_rcpt"><?=$lang['admin']['relay_rcpt'];?></label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" name="mail_rcpt" placeholder="null@hosted.mailcow.de" value="null@hosted.mailcow.de">
+                <p class="help-block"><?=$lang['admin']['transport_test_rcpt_info'];?></p>
               </div>
             </div>
             <div class="form-group">

@@ -20,6 +20,9 @@ header_remove("X-Powered-By");
 // Yubi OTP API
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/Yubico.php';
 
+// WebAuthn
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/WebAuthn.php';
+
 // Autoload composer
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/lib/vendor/autoload.php';
 
@@ -51,6 +54,21 @@ foreach ($css_dir as $css_file) {
 $u2f = new u2flib_server\U2F('https://' . $_SERVER['HTTP_HOST']);
 $qrprovider = new RobThree\Auth\Providers\Qr\QRServerProvider();
 $tfa = new RobThree\Auth\TwoFactorAuth($OTP_LABEL, 6, 30, 'sha1', $qrprovider);
+
+// FIDO2
+$formats = $GLOBALS['FIDO2_FORMATS'];
+$WebAuthn = new \WebAuthn\WebAuthn('WebAuthn Library', $_SERVER['HTTP_HOST'], $formats);
+$WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/solo.pem');
+$WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/apple.pem');
+$WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/nitro.pem');
+$WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/yubico.pem');
+$WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/hypersecu.pem');
+$WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/globalSign.pem');
+$WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/googleHardware.pem');
+$WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/microsoftTpmCollection.pem');
+$WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/huawei.pem');
+$WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/trustkey.pem');
+$WebAuthn->addRootCertificates($_SERVER['DOCUMENT_ROOT'] . '/inc/lib/WebAuthn/rootCertificates/bsi.pem');
 
 // Redis
 $redis = new Redis();
@@ -218,27 +236,28 @@ if(file_exists($langFile)) {
 }
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.acl.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.app_passwd.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.mailbox.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.customize.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.address_rewriting.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.domain_admin.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.admin.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.quarantine.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.quota_notification.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.policy.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.app_passwd.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.customize.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.dkim.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.docker.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.domain_admin.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.fail2ban.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.fwdhost.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.mailbox.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.mailq.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.oauth2.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.policy.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.presets.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.pushover.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.quarantine.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.quota_notification.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.ratelimit.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.transports.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.rspamd.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.tls_policy_maps.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.fail2ban.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.docker.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.presets.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.transports.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/functions.xmpp.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/init_db.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/inc/triggers.inc.php';
 init_db_schema();
