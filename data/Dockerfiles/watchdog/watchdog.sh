@@ -134,7 +134,6 @@ function mail_error() {
         log_msg "Cannot determine MX for ${rcpt}, skipping email notification..."
         return 1
       fi
-    [ -f "/tmp/${1}" ] && BODY="/tmp/${1}"
       [ -f "/tmp/${1}" ] && BODY="/tmp/${1}"
       timeout 10s ./smtp-cli --missing-modules-ok \
         "${SMTP_VERBOSE}" \
