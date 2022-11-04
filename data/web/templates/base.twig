@@ -32,12 +32,12 @@
       <ul class="nav navbar-nav navbar-right">
         {% if mailcow_locale %}
         <li class="dropdown{% if available_languages|length == 1 %}lang-link-disabled{% endif %}">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="flag-icon flag-icon-{{ mailcow_locale }}"></span><span class="caret"></span></a>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="flag-icon flag-icon-{{ mailcow_locale[-2:] }}"></span><span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
             {% for key, val in available_languages %}
             <li{% if mailcow_locale == key %} class="active"{% endif %}>
               <a href="?{{ query_string({'lang': key}) }}">
-                <span class="flag-icon flag-icon-{{ key }}"></span>{{ val }}
+                <span class="flag-icon flag-icon-{{ key[-2:] }}"></span>{{ val }}
               </a>
             </li>
             {% endfor %}
@@ -172,7 +172,7 @@ function recursiveBase64StrToArrayBuffer(obj) {
     // TFA, CSRF, Alerts in footer.inc.php
     // Other general functions in mailcow.js
     {% for alert_type, alert_msg in alerts %}
-    mailcow_alert_box('{{ alert_msg|raw }}', '{{ alert_type }}');
+    mailcow_alert_box('{{ alert_msg|raw|e("js") }}', '{{ alert_type }}');
     {% endfor %}
 
     // Confirm TFA modal
@@ -182,30 +182,19 @@ function recursiveBase64StrToArrayBuffer(obj) {
       keyboard: false
     });
 
-    // validate Yubi OTP tfa
-    $("#pending_tfa_tab_yubi_otp").click(function(){
-      $(".totp-authenticator-selection").removeClass("active");
-      $(".webauthn-authenticator-selection").removeClass("active");
 
-      $("#collapseTotpTFA").collapse('hide');
-      $("#collapseWebAuthnTFA").collapse('hide');
-    });
-    $(".yubi-authenticator-selection").click(function(){
-      $(".yubi-authenticator-selection").removeClass("active");
-      $(this).addClass("active");
-
-      var id = $(this).children('input').first().val();
-      $("#yubi_selected_id").val(id);
-
-      $("#collapseYubiTFA").collapse('show');
-    });
     // validate Time based OTP tfa
     $("#pending_tfa_tab_totp").click(function(){
-      $(".yubi-authenticator-selection").removeClass("active");
       $(".webauthn-authenticator-selection").removeClass("active");
-
-      $("#collapseYubiTFA").collapse('hide');
       $("#collapseWebAuthnTFA").collapse('hide');
+
+      // select default if only one authenticator exists
+      if ($('.totp-authenticator-selection').length == 1){
+        $('.totp-authenticator-selection').addClass("active");
+        var id = $('.totp-authenticator-selection').children('input').first().val();
+        $("#totp_selected_id").val(id);
+        $("#collapseTotpTFA").collapse('show');
+      }
     });
     $(".totp-authenticator-selection").click(function(){
       $(".totp-authenticator-selection").removeClass("active");
@@ -216,13 +205,37 @@ function recursiveBase64StrToArrayBuffer(obj) {
 
       $("#collapseTotpTFA").collapse('show');
     });
+    if ($('.totp-authenticator-selection').length == 1 &&
+        $('#pending_tfa_tab_yubi_otp').length == 0 &&
+        $('.webauthn-authenticator-selection').length == 0){
+      
+      // select default if only one authenticator exists
+      $('.totp-authenticator-selection').addClass("active");
+
+      var id = $('.totp-authenticator-selection').children('input').first().val();
+      $("#totp_selected_id").val(id);
+
+      $("#collapseTotpTFA").collapse('show');
+      setTimeout(function() { $("#collapseTotpTFA").find('input[name="token"]').focus(); }, 1000);
+    }
+    $('#pending_tfa_tab_totp').on('shown.bs.tab', function() {
+      // autofocus
+      setTimeout(function() { $("#collapseTotpTFA").find('input[name="token"]').focus(); }, 200);
+    });    
+    // validate Yubi OTP tfa
+    if ($('.webauthn-authenticator-selection').length == 0){
+      // autofocus
+      setTimeout(function() { $("#collapseYubiTFA").find('input[name="token"]').focus(); }, 1000);
+    }
+    $('#pending_tfa_tab_yubi_otp').on('shown.bs.tab', function() {
+      // autofocus
+      $("#collapseYubiTFA").find('input[name="token"]').focus();
+    });
     // validate WebAuthn tfa
     $("#pending_tfa_tab_webauthn").click(function(){
       $(".totp-authenticator-selection").removeClass("active");
-      $(".yubi-authenticator-selection").removeClass("active");
 
       $("#collapseTotpTFA").collapse('hide');
-      $("#collapseYubiTFA").collapse('hide');
     });
     $(".webauthn-authenticator-selection").click(function(){
       $(".webauthn-authenticator-selection").removeClass("active");
@@ -477,12 +490,19 @@ function recursiveBase64StrToArrayBuffer(obj) {
   {% if ui_texts.ui_footer %}
   <hr><span class="rot-enc">{{ ui_texts.ui_footer|rot13|raw }}</span>
   {% endif %}
-  {% if mailcow_cc_username and mailcow_info.version_tag|default %}
+  {% if mailcow_cc_username and mailcow_info.mailcow_branch|lower == "master" and mailcow_info.version_tag|default %}
   <span class="version">
     🐮 + 🐋 = 💕
-    <a href="{{ mailcow_info.git_project_url }}/releases/tag/{{ mailcow_info.version_tag }}" target="_blank">
-        Version: {{ mailcow_info.version_tag }}
+        Version: <a href="{{ mailcow_info.git_project_url }}/releases/tag/{{ mailcow_info.version_tag }}" target="_blank">{{ mailcow_info.version_tag }}
     </a>
+  </span>
+  {% endif %}  
+  {% if mailcow_cc_username and mailcow_info.mailcow_branch|lower == "nightly" and mailcow_info.version_tag|default %}
+  <span class="version">
+    🛠️🐮 + 🐋 = 💕
+        Nightly: <a href="{{ mailcow_info.git_project_url }}/commit/{{ mailcow_info.git_commit }}" target="_blank">{{ mailcow_info.version_tag }}
+    </a><br>
+    <span style="text-align:right;display:block;">Build: {{ mailcow_info.git_commit_date }}</span>
   </span>
   {% endif %}
 </div>

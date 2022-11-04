@@ -41,7 +41,7 @@ services:
             - mysql
 
     redis-mailcow:
-      image: redis:6-alpine
+      image: redis:7-alpine
       volumes:
         - redis-vol-1:/data/
       restart: always
@@ -168,7 +168,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.109
+      image: mailcow/sogo:1.111
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -215,7 +215,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: jacobbaungard/mailcow-dovecot-gpgit:1.17
+      image: jacobbaungard/mailcow-dovecot-gpgit:1.20
       depends_on:
         - mysql-mailcow
       dns:
@@ -295,7 +295,7 @@ services:
             - dovecot
 
     postfix-mailcow:
-      image: mailcow/postfix:1.67
+      image: mailcow/postfix:1.68
       depends_on:
         - mysql-mailcow
       volumes:
@@ -424,7 +424,7 @@ services:
             - acme
 
     netfilter-mailcow:
-      image: mailcow/netfilter:1.48
+      image: mailcow/netfilter:1.49
       stop_grace_period: 30s
       depends_on:
         - dovecot-mailcow
