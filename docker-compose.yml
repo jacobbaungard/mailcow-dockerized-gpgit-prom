@@ -106,7 +106,7 @@ services:
             - rspamd
 
     php-fpm-mailcow:
-      image: mailcow/phpfpm:1.81
+      image: mailcow/phpfpm:1.82
       command: "php-fpm -d date.timezone=${TZ} -d expose_php=0"
       depends_on:
         - redis-mailcow
@@ -169,7 +169,7 @@ services:
             - phpfpm
 
     sogo-mailcow:
-      image: mailcow/sogo:1.113
+      image: mailcow/sogo:1.114
       environment:
         - DBNAME=${DBNAME}
         - DBUSER=${DBUSER}
@@ -216,7 +216,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: jacobbaungard/mailcow-dovecot-gpgit:1.21
+      image: jacobbaungard/mailcow-dovecot-gpgit:1.22
       depends_on:
         - mysql-mailcow
       dns:
@@ -389,7 +389,7 @@ services:
     acme-mailcow:
       depends_on:
         - nginx-mailcow
-      image: mailcow/acme:1.83
+      image: mailcow/acme:1.84
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:
@@ -511,11 +511,10 @@ services:
             - watchdog
 
     dockerapi-mailcow:
-      image: mailcow/dockerapi:2.0
+      image: mailcow/dockerapi:2.01
       security_opt:
         - label=disable
       restart: always
-      oom_kill_disable: true
       dns:
         - ${IPV4_NETWORK:-172.22.1}.254
       environment:

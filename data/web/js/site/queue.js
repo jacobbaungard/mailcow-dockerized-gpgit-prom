@@ -21,7 +21,6 @@ jQuery(function($){
           url: '/api/v1/get/postcat/' + button.data('queue-id'),
           dataType: 'text',
           complete: function (data) {
-            console.log(data);
             $('#queue_msg_content').text(data.responseText);
           }
       });
@@ -35,8 +34,13 @@ jQuery(function($){
     }
 
     $('#queuetable').DataTable({
+			responsive: true,
       processing: true,
       serverSide: false,
+      stateSave: true,
+      dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
+           "tr" +
+           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       language: lang_datatables,
       ajax: {
         type: "GET",
@@ -49,7 +53,7 @@ jQuery(function($){
             });
             item.recipients = rcpts.join('<hr style="margin:1px!important">');
             item.action = '<div class="btn-group">' +
-              '<a href="#" data-bs-toggle="modal" data-bs-target="#showQueuedMsg" data-queue-id="' + encodeURI(item.queue_id) + '" class="btn btn-xs btn-secondary">' + lang.queue_show_message + '</a>' +
+              '<a href="#" data-bs-toggle="modal" data-bs-target="#showQueuedMsg" data-queue-id="' + encodeURI(item.queue_id) + '" class="btn btn-xs btn-secondary">' + lang.show_message + '</a>' +
             '</div>';
           });
           return data;
