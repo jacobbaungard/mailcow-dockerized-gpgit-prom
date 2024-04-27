@@ -3,7 +3,7 @@ function init_db_schema() {
   try {
     global $pdo;
 
-    $db_version = "21112023_1644";
+    $db_version = "26022024_1433";
 
     $stmt = $pdo->query("SHOW TABLES LIKE 'versions'");
     $num_results = count($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -273,6 +273,8 @@ function init_db_schema() {
           "html" => "LONGTEXT",
           "plain" => "LONGTEXT",
           "mbox_exclude" => "JSON NOT NULL DEFAULT ('[]')",
+          "alias_domain_exclude" => "JSON NOT NULL DEFAULT ('[]')",
+          "skip_replies" => "TINYINT(1) NOT NULL DEFAULT '0'"
         ),
         "keys" => array(
           "primary" => array(
@@ -977,6 +979,18 @@ function init_db_schema() {
         ),
         "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
       ),
+      "sogo_admin" => array(
+        "cols" => array(
+          "c_key" => "VARCHAR(255) NOT NULL DEFAULT ''",
+          "c_content"  => "mediumtext NOT NULL",
+        ),
+        "keys" => array(
+          "primary" => array(
+            "" => array("c_key")
+          )
+        ),
+        "attr" => "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC"
+      ),      
       "pushover" => array(
         "cols" => array(
           "username" => "VARCHAR(255) NOT NULL",

@@ -567,6 +567,14 @@ rspamd_config:register_symbol({
           if footer and type(footer) == "table" and (footer.html and footer.html ~= "" or footer.plain and footer.plain ~= "")  then
             rspamd_logger.infox(rspamd_config, "found domain wide footer for user %s: html=%s, plain=%s, vars=%s", uname, footer.html, footer.plain, footer.vars)
 
+            if footer.skip_replies ~= 0 then
+              in_reply_to = task:get_header_raw('in-reply-to')
+              if in_reply_to then
+                rspamd_logger.infox(rspamd_config, "mail is a reply - skip footer")
+                return
+              end
+            end
+
             local envfrom_mime = task:get_from(2)
             local from_name = ""
             if envfrom_mime and envfrom_mime[1].name then
@@ -613,10 +621,24 @@ rspamd_config:register_symbol({
                   local nct = string.format('%s: %s/%s; charset=utf-8',
                       'Content-Type', rewrite.new_ct.type, rewrite.new_ct.subtype)
                   out[#out + 1] = nct
+                  -- update Content-Type header
+                  task:set_milter_reply({
+                    remove_headers = {['Content-Type'] = 0},
+                  })
+                  task:set_milter_reply({
+                    add_headers = {['Content-Type'] = string.format('%s/%s; charset=utf-8', rewrite.new_ct.type, rewrite.new_ct.subtype)}
+                  })
                   return
                 elseif name:lower() == 'content-transfer-encoding' then
                   out[#out + 1] = string.format('%s: %s',
                       'Content-Transfer-Encoding', 'quoted-printable')
+                  -- update Content-Transfer-Encoding header
+                  task:set_milter_reply({
+                    remove_headers = {['Content-Transfer-Encoding'] = 0},
+                  })
+                  task:set_milter_reply({
+                    add_headers = {['Content-Transfer-Encoding'] = 'quoted-printable'}
+                  })
                   seen_cte = true
                   return
                 end

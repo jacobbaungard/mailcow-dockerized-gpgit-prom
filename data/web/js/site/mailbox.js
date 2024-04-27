@@ -435,7 +435,7 @@ jQuery(function($){
     var table = $('#domain_table').DataTable({
       responsive: true,
       processing: true,
-      serverSide: false,
+      serverSide: true,
       stateSave: true,
       pageLength: pagination_size,
       dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
@@ -447,10 +447,14 @@ jQuery(function($){
       },
       ajax: {
         type: "GET",
-        url: "/api/v1/get/domain/all",
+        url: "/api/v1/get/domain/datatables",
         dataSrc: function(json){
-          $.each(json, function(i, item) {
+          $.each(json.data, function(i, item) {
             item.domain_name = escapeHtml(item.domain_name);
+            item.domain_h_name = escapeHtml(item.domain_h_name);
+            if (item.domain_name != item.domain_h_name){
+              item.domain_h_name = item.domain_h_name + '<small class="d-block">' + item.domain_name + '</small>';
+            }
 
             item.aliases = item.aliases_in_domain + " / " + item.max_num_aliases_for_domain;
             item.mailboxes = item.mboxes_in_domain + " / " + item.max_num_mboxes_for_domain;
@@ -489,16 +493,16 @@ jQuery(function($){
 
             if (item.backupmx == 1) {
               if (item.relay_unknown_only == 1) {
-                item.domain_name = '<div class="badge fs-6 bg-info">Relay Non-Local</div> ' + item.domain_name;
+                item.domain_h_name = '<div class="badge fs-7 bg-info">Relay Non-Local</div> ' + item.domain_h_name;
               } else if (item.relay_all_recipients == 1) {
-                item.domain_name = '<div class="badge fs-6 bg-info">Relay All</div> ' + item.domain_name;
+                item.domain_h_name = '<div class="badge fs-7 bg-info">Relay All</div> ' + item.domain_h_name;
               } else {
-                item.domain_name = '<div class="badge fs-6 bg-info">Relay</div> ' + item.domain_name;
+                item.domain_h_name = '<div class="badge fs-7 bg-info">Relay</div> ' + item.domain_h_name;
               }
             }
           });
 
-          return json;
+          return json.data;
         }
       },
       columns: [
@@ -521,24 +525,27 @@ jQuery(function($){
         },
         {
           title: lang.domain,
-          data: 'domain_name',
+          data: 'domain_h_name',
           responsivePriority: 3,
           defaultContent: ''
         },
         {
           title: lang.aliases,
           data: 'aliases',
+          searchable: false,
           defaultContent: ''
         },
         {
           title: lang.mailboxes,
           data: 'mailboxes',
+          searchable: false,
           responsivePriority: 4,
           defaultContent: ''
         },
         {
           title: lang.domain_quota,
           data: 'quota',
+          searchable: false,
           defaultContent: '',
           render: function (data, type) {
             data = data.split("/");
@@ -548,6 +555,7 @@ jQuery(function($){
         {
           title: lang.stats,
           data: 'stats',
+          searchable: false,
           defaultContent: '',
           render: function (data, type) {
             data = data.split("/");
@@ -557,53 +565,67 @@ jQuery(function($){
         {
           title: lang.mailbox_defquota,
           data: 'def_quota_for_mbox',
+          searchable: false,
           defaultContent: ''
         },
         {
           title: lang.mailbox_quota,
           data: 'max_quota_for_mbox',
+          searchable: false,
           defaultContent: ''
         },
         {
           title: 'RL',
           data: 'rl',
+          searchable: false,
+          orderable: false,
           defaultContent: ''
         },
         {
           title: lang.backup_mx,
           data: 'backupmx',
+          searchable: false,
           defaultContent: '',
-          redner: function (data, type){
-            return 1==value ? '<i class="bi bi-check-lg"></i>' : 0==value && '<i class="bi bi-x-lg"></i>';
+          render: function (data, type){
+            return 1==data ? '<i class="bi bi-check-lg"></i>' : 0==data && '<i class="bi bi-x-lg"></i>';
           }
         },
         {
           title: lang.domain_admins,
           data: 'domain_admins',
+          searchable: false,
+          orderable: false,
           defaultContent: '',
           className: 'none'
         },
         {
           title: lang.created_on,
           data: 'created',
+          searchable: false,
+          orderable: false,
           defaultContent: '',
           className: 'none'
         },
         {
           title: lang.last_modified,
           data: 'modified',
+          searchable: false,
+          orderable: false,
           defaultContent: '',
           className: 'none'
         },
         {
           title: 'Tags',
           data: 'tags',
+          searchable: true,
+          orderable: false,
           defaultContent: '',
           className: 'none'
         },
         {
           title: lang.active,
           data: 'active',
+          searchable: false,
           defaultContent: '',
           responsivePriority: 6,
           render: function (data, type) {
@@ -613,6 +635,8 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
+          searchable: false,
+          orderable: false,
           className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
           responsivePriority: 5,
           defaultContent: ''
@@ -844,7 +868,7 @@ jQuery(function($){
     var table = $('#mailbox_table').DataTable({
       responsive: true,
       processing: true,
-      serverSide: false,
+      serverSide: true,
       stateSave: true,
       pageLength: pagination_size,
       dom: "<'row'<'col-sm-12 col-md-6'f><'col-sm-12 col-md-6'l>>" +
@@ -853,13 +877,12 @@ jQuery(function($){
       language: lang_datatables,
       initComplete: function(settings, json){
         hideTableExpandCollapseBtn('#tab-mailboxes', '#mailbox_table');
-        filterByDomain(json, 8, table);
       },
       ajax: {
         type: "GET",
-        url: "/api/v1/get/mailbox/reduced",
+        url: "/api/v1/get/mailbox/datatables",
         dataSrc: function(json){
-          $.each(json, function (i, item) {
+          $.each(json.data, function (i, item) {
             item.quota = {
               sortBy: item.quota_used,
               value: item.quota
@@ -945,7 +968,7 @@ jQuery(function($){
             }
           });
 
-          return json;
+          return json.data;
         }
       },
       columns: [
@@ -975,13 +998,14 @@ jQuery(function($){
         {
           title: lang.domain_quota,
           data: 'quota.value',
+          searchable: false,
           responsivePriority: 8,
-          defaultContent: '',
-          orderData: 23
+          defaultContent: ''
         },
         {
           title: lang.last_mail_login,
           data: 'last_mail_login',
+          searchable: false,
           defaultContent: '',
           responsivePriority: 7,
           render: function (data, type) {
@@ -994,15 +1018,16 @@ jQuery(function($){
         {
           title: lang.last_pw_change,
           data: 'last_pw_change',
+          searchable: false,
           defaultContent: ''
         },
         {
           title: lang.in_use,
           data: 'in_use.value',
+          searchable: false,
           defaultContent: '',
           responsivePriority: 9,
-          className: 'dt-data-w100',
-          orderData: 24
+          className: 'dt-data-w100'
         },
         {
           title: lang.fname,
@@ -1067,6 +1092,7 @@ jQuery(function($){
         {
           title: lang.msg_num,
           data: 'messages',
+          searchable: false,
           defaultContent: '',
           responsivePriority: 5
         },
@@ -1085,12 +1111,14 @@ jQuery(function($){
         {
           title: 'Tags',
           data: 'tags',
+          searchable: true,
           defaultContent: '',
           className: 'none'
         },
         {
           title: lang.active,
           data: 'active',
+          searchable: false,
           defaultContent: '',
           responsivePriority: 4,
           render: function (data, type) {
@@ -1100,22 +1128,12 @@ jQuery(function($){
         {
           title: lang.action,
           data: 'action',
+          searchable: false,
+          orderable: false,
           className: 'dt-sm-head-hidden dt-data-w100 dtr-col-md dt-text-right',
           responsivePriority: 6,
           defaultContent: ''
-        },
-        {
-          title: "",
-          data: 'quota.sortBy',
-          defaultContent: '',
-          className: "d-none"
-        },
-        {
-          title: "",
-          data: 'in_use.sortBy',
-          defaultContent: '',
-          className: "d-none"
-        },
+        }
       ]
     });
 

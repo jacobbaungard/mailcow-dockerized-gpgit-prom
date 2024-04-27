@@ -95,6 +95,8 @@ $AVAILABLE_LANGUAGES = array(
   'it-it' => 'Italiano (Italian)',
   'ko-kr' => '한국어 (Korean)',
   'lv-lv' => 'latviešu (Latvian)',
+  'lt-lt' => 'Lietuvių (Lithuanian)',
+  'nb-no' => 'Norsk (Norwegian)',
   'nl-nl' => 'Nederlands (Dutch)',
   'pl-pl' => 'Język Polski (Polish)',
   'pt-br' => 'Português brasileiro (Brazilian Portuguese)',
@@ -125,6 +127,15 @@ $MAILCOW_APPS = array(
     'link' => '/SOGo/',
   )
 );
+
+// Logo max file size in bytes
+$LOGO_LIMITS['max_size'] = 15 * 1024 * 1024; // 15MB
+
+// Logo max width in pixels
+$LOGO_LIMITS['max_width'] = 1920;
+
+// Logo max height in pixels
+$LOGO_LIMITS['max_height'] = 1920;
 
 // Rows until pagination begins
 $PAGINATION_SIZE = 25;
