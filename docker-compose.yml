@@ -222,8 +222,7 @@ services:
             - sogo
 
     dovecot-mailcow:
-      image: jacobbaungard/mailcow-dovecot-gpgit:1.28.8.2
-      image: mailcow/dovecot:1.28.2
+      image: jacobbaungard/mailcow-dovecot-gpgit:1.28.2
       depends_on:
         - mysql-mailcow
         - netfilter-mailcow
