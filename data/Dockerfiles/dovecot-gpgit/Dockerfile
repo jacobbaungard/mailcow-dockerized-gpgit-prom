@@ -1,5 +1,4 @@
-FROM mailcow/dovecot:2.3
-LABEL maintainer="Jacob Baungard Hansen <jacob@baungard-hansen.me>"
+FROM ghcr.io/mailcow/dovecot:2.33
 
 # RUN apt-get update && apt-get install -y libmail-gnupg-perl git
 RUN apk add git perl gnupg make curl
