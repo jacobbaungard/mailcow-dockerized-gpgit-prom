@@ -1,4 +1,4 @@
-FROM ghcr.io/mailcow/dovecot:2.33
+FROM ghcr.io/mailcow/dovecot:2.35
 
 # RUN apt-get update && apt-get install -y libmail-gnupg-perl git
 RUN apk add git perl gnupg make curl
