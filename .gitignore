@@ -76,3 +76,4 @@ update_diffs/
 create_cold_standby.sh
 .github
 !data/conf/nginx/mailcow_auth.conf
+data/conf/postfix/postfix-tlspol
