@@ -33,6 +33,8 @@ if ($https_port === FALSE) {
 //$https_port = 1234;
 // Other settings =>
 $autodiscover_config = array(
+  'displayName' => 'A mailcow mail server',
+  'displayShortName' => 'mail server',
   // General autodiscover service type: "activesync" or "imap"
   // emClient uses autodiscover, but does not support ActiveSync. mailcow excludes emClient from ActiveSync.
   // With SOGo disabled, the type will always fallback to imap. CalDAV and CardDAV will be excluded, too.
@@ -85,7 +87,7 @@ $AVAILABLE_LANGUAGES = array(
   // 'ca-es' => 'Català (Catalan)',
   'bg-bg' => 'Български (Bulgarian)',
   'cs-cz' => 'Čeština (Czech)',
-  'da-dk' => 'Danish (Dansk)',
+  'da-dk' => 'Dansk (Danish)',
   'de-de' => 'Deutsch (German)',
   'en-gb' => 'English',
   'es-es' => 'Español (Spanish)',
@@ -214,6 +216,12 @@ $MAILBOX_DEFAULT_ATTRIBUTES['smtp_access'] = true;
 
 // Mailbox has sieve access by default
 $MAILBOX_DEFAULT_ATTRIBUTES['sieve_access'] = true;
+
+// Mailbox has ActiveSync/EAS access by default
+$MAILBOX_DEFAULT_ATTRIBUTES['eas_access'] = true;
+
+// Mailbox has CalDAV/CardDAV (DAV) access by default
+$MAILBOX_DEFAULT_ATTRIBUTES['dav_access'] = true;
 
 // Mailbox receives notifications about...
 // "add_header" - mail that was put into the Junk folder
